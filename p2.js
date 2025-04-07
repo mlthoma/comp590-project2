@@ -23,6 +23,7 @@ let xzContext, yzContext, xyContext, xyzContext;
 // ----------------------------------------------
 // Axis data (do not modify)
 // ----------------------------------------------
+
 let A = [
     [0.0, 0.0, 0.0],
     [1.0, 0.0, 0.0],
@@ -31,6 +32,57 @@ let A = [
     [0.0, 0.0, 0.0],
     [0.0, 0.0, 1.0]
 ];
+
+// ----------------------------------------------
+// end axis data
+// ----------------------------------------------
+
+// ----------------------------------------------
+// Simulation control (do not modify)
+// ----------------------------------------------
+function startRotation(rotationFunc) {
+    if (axisRotation !== null) clearInterval(axisRotation);
+    axisRotation = setInterval(rotationFunc, 100);
+}
+
+function stopRotation() {
+    clearInterval(axisRotation);
+    axisRotation = null;
+}
+
+document.addEventListener('mouseup', stopRotation);
+
+document.addEventListener('mousedown', function (event) {
+    switch (event.target.id) {
+        case "pitch-up":
+            startRotation(() => { xang = (xang + rot_inc) % 360; });
+            break;
+        case "pitch-down":
+            startRotation(() => { xang = (xang - rot_inc) % 360; });
+            break;
+        case "roll-left":
+            startRotation(() => { zang = (zang + rot_inc) % 360; });
+            break;
+        case "roll-right":
+            startRotation(() => { zang = (zang - rot_inc) % 360; });
+            break;
+        case "yaw-left":
+            startRotation(() => { yang = (yang + rot_inc) % 360; });
+            break;
+        case "yaw-right":
+            startRotation(() => { yang = (yang - rot_inc) % 360; });
+            break;
+        case "reset":
+            xang = yang = zang = 0;
+            break;
+        default:
+            stopRotation();
+    }
+});
+
+// ----------------------------------------------
+// End simuation control
+// ----------------------------------------------
 
 function createVertexData() {
     let row = 0;
@@ -108,14 +160,6 @@ function configure() {
     });
 }
 
-
-
-
-
-
-
-
-
 function allocateMemory() {
     [xzContext, yzContext, xyContext, xyzContext].forEach(context => {
         const buffer_id = context.createBuffer();
@@ -169,49 +213,6 @@ function draw() {
         context.drawArrays(context.LINES, axisStart + 4, 2);
     });
 }
-
-// ----------------------------------------------
-// Simulation control (do not modify)
-// ----------------------------------------------
-function startRotation(rotationFunc) {
-    if (axisRotation !== null) clearInterval(axisRotation);
-    axisRotation = setInterval(rotationFunc, 100);
-}
-
-function stopRotation() {
-    clearInterval(axisRotation);
-    axisRotation = null;
-}
-
-document.addEventListener('mouseup', stopRotation);
-
-document.addEventListener('mousedown', function (event) {
-    switch (event.target.id) {
-        case "pitch-up":
-            startRotation(() => { xang = (xang + rot_inc) % 360; });
-            break;
-        case "pitch-down":
-            startRotation(() => { xang = (xang - rot_inc) % 360; });
-            break;
-        case "roll-left":
-            startRotation(() => { zang = (zang + rot_inc) % 360; });
-            break;
-        case "roll-right":
-            startRotation(() => { zang = (zang - rot_inc) % 360; });
-            break;
-        case "yaw-left":
-            startRotation(() => { yang = (yang + rot_inc) % 360; });
-            break;
-        case "yaw-right":
-            startRotation(() => { yang = (yang - rot_inc) % 360; });
-            break;
-        case "reset":
-            xang = yang = zang = 0;
-            break;
-        default:
-            stopRotation();
-    }
-});
 
 
 createVertexData();
