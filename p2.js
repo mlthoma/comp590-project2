@@ -173,46 +173,57 @@ function allocateMemory() {
 function draw() {
     rot = (rot + 5) % 360;
 
-
     [
-        { context: xzContext, angles: { x: 0, y: -yang, z: 0 } },           
-        { context: yzContext, angles: { x: xang, y: 0, z: 0 } },         
-        { context: xyContext, angles: { x: 0, y: 0, z: zang } },         
-        { context: xyzContext, angles: { x: xang, y: yang, z: zang } }   
+        { context: xzContext, angles: { x: 0, y: -yang, z: 0 } },
+        { context: yzContext, angles: { x: xang, y: 0, z: 0 } },
+        { context: xyContext, angles: { x: 0, y: 0, z: zang } },
+        { context: xyzContext, angles: { x: xang, y: yang, z: zang } }
     ].forEach(({ context, angles }) => {
         context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
 
-  
-        context.uniform4f(context.uniform_props, 
-            angles.x * Math.PI / 180, 
-            angles.y * Math.PI / 180, 
-            angles.z * Math.PI / 180, 
+
+        context.uniform4f(
+            context.uniform_props,
+            angles.x * Math.PI / 180,
+            angles.y * Math.PI / 180,
+            angles.z * Math.PI / 180,
             1.75
         );
         context.uniform1f(context.uniform_z_translation, 0.0);
         context.uniform4f(context.uniform_color, 0.81, 0.81, 0.81, 1.0);
         context.drawArrays(context.TRIANGLES, 0, Fpl.length * 3);
 
-        context.uniform4f(context.uniform_color, 0.5, 0.5, 0.5, 1.0);
-        context.uniform4f(context.uniform_props, 
-            angles.x * Math.PI / 180, 
-            angles.y * Math.PI / 180, 
-            rot * Math.PI / 180, 
+        context.uniform4f(
+            context.uniform_props,
+            angles.x * Math.PI / 180,
+            angles.y * Math.PI / 180,
+            (rot) * Math.PI / 180,
             1.75
         );
+        context.uniform4f(context.uniform_color, 0.5, 0.5, 0.5, 1.0);
         context.drawArrays(context.TRIANGLES, Fpl.length * 3, Fpp.length * 3);
 
-   
         const axisStart = (Fpl.length + Fpp.length) * 3;
-        context.uniform4f(context.uniform_props, 0, 0, 0, 1.0);
+
+        context.uniform4f(
+            context.uniform_props,
+            angles.x * Math.PI / 180,
+            angles.y * Math.PI / 180,
+            angles.z * Math.PI / 180,
+            1.75
+        );
+
         context.uniform4f(context.uniform_color, 1.0, 0.0, 0.0, 1.0);
         context.drawArrays(context.LINES, axisStart, 2);
+
         context.uniform4f(context.uniform_color, 0.0, 1.0, 0.0, 1.0);
         context.drawArrays(context.LINES, axisStart + 2, 2);
+
         context.uniform4f(context.uniform_color, 0.0, 0.0, 1.0, 1.0);
         context.drawArrays(context.LINES, axisStart + 4, 2);
     });
 }
+
 
 
 createVertexData();
