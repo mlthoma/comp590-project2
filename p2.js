@@ -173,15 +173,13 @@ function allocateMemory() {
 function draw() {
     rot = (rot + 5) % 360;
 
-    [
-        { context: xzContext, angles: { x: 0, y: -yang, z: 0 } },
-        { context: yzContext, angles: { x: xang, y: 0, z: 0 } },
-        { context: xyContext, angles: { x: 0, y: 0, z: zang } },
-        { context: xyzContext, angles: { x: xang, y: yang, z: zang } }
+    [{ context: xzContext, angles: { x: 0, y: -yang, z: 0 }},
+    { context: yzContext, angles: { x: xang, y: 0, z: 0 }},
+    { context: xyContext, angles: { x: 0, y: 0, z: zang }},
+    { context: xyzContext, angles: { x: xang, y: yang, z: zang }}
     ].forEach(({ context, angles }) => {
         context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
-
-
+        
         context.uniform4f(
             context.uniform_props,
             angles.x * Math.PI / 180,
