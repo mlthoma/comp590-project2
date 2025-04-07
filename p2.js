@@ -55,19 +55,20 @@ function createVertexData() {
 }
 
 function configure() {
-
+   
     const xzCanvas = document.getElementById("xz");
     const yzCanvas = document.getElementById("yz");
     const xyCanvas = document.getElementById("xy");
     const xyzCanvas = document.getElementById("xyz");
 
-
+   
     xzContext = xzCanvas.getContext("webgl");
     yzContext = yzCanvas.getContext("webgl");
     xyContext = xyCanvas.getContext("webgl");
     xyzContext = xyzCanvas.getContext("webgl");
 
-    [xzContext, yzContext, xyContext, xyzContext].forEach(context => {
+  
+    [xzContext, yzContext, xyContext, xyzContext].forEach((context, index) => {
         const program = initShaders(context, "vertex-shader", "fragment-shader");
         context.useProgram(program);
         
@@ -80,14 +81,40 @@ function configure() {
         context.uniform_z_translation = context.getUniformLocation(program, "z_translation");
         context.uniform_view = context.getUniformLocation(program, "View");
 
-       
-        const at = vec3(0.0, 0.0, 0.0);
-        const up = vec3(0.0, 0.5, 0.0);
-        const eye = vec3(-0.15, -0.15, 0.35);
+        let eye, at, up;
+        at = vec3(0.0, 0.0, 0.0);
+        
+        switch(index) {
+            case 0: 
+                eye = vec3(0.0, 0.35, 0.0);
+                up = vec3(0.0, 0.0, 1.0); 
+                break;
+            case 1: 
+                eye = vec3(0.0, 0.0, -0.35);
+                up = vec3(0.0, 1.0, 0.0);
+                break;
+            case 2:
+            eye = vec3(0.35, 0.0, 0.0);
+            up = vec3(0.0, 1.0, 0.0);
+                break;
+            case 3:
+            eye = vec3(0.0, 0.0, 0.35);
+            up = vec3(0.0, 1.0, 0.0);
+                break;
+        }
+
         const viewMatrix = lookAt(eye, at, up);
         context.uniformMatrix4fv(context.uniform_view, false, flatten(viewMatrix));
     });
 }
+
+
+
+
+
+
+
+
 
 function allocateMemory() {
     [xzContext, yzContext, xyContext, xyzContext].forEach(context => {
@@ -104,7 +131,7 @@ function draw() {
 
 
     [
-        { context: xzContext, angles: { x: 0, y: yang, z: 0 } },           
+        { context: xzContext, angles: { x: 0, y: -yang, z: 0 } },           
         { context: yzContext, angles: { x: xang, y: 0, z: 0 } },         
         { context: xyContext, angles: { x: 0, y: 0, z: zang } },         
         { context: xyzContext, angles: { x: xang, y: yang, z: zang } }   
