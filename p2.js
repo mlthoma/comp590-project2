@@ -1,6 +1,5 @@
 console.clear();
 
-
 let webgl_context = null;
 let attr_vertex = null;
 let uniform_props = null;
@@ -18,7 +17,7 @@ let axisRotation = null;
 let xang = 0, yang = 0, zang = 0;
 const rot_inc = 5;
 
-
+// Canvas and context variables
 let xzContext, yzContext, xyContext, xyzContext;
 
 // ----------------------------------------------
@@ -56,19 +55,19 @@ function createVertexData() {
 }
 
 function configure() {
-
+    // Get all canvases
     const xzCanvas = document.getElementById("xz");
     const yzCanvas = document.getElementById("yz");
     const xyCanvas = document.getElementById("xy");
     const xyzCanvas = document.getElementById("xyz");
 
-
+    // Get contexts
     xzContext = xzCanvas.getContext("webgl");
     yzContext = yzCanvas.getContext("webgl");
     xyContext = xyCanvas.getContext("webgl");
     xyzContext = xyzCanvas.getContext("webgl");
 
-
+    // Set up each context exactly like the working one
     [xzContext, yzContext, xyContext, xyzContext].forEach(context => {
         const program = initShaders(context, "vertex-shader", "fragment-shader");
         context.useProgram(program);
@@ -81,26 +80,14 @@ function configure() {
         context.uniform_color = context.getUniformLocation(program, "color");
         context.uniform_z_translation = context.getUniformLocation(program, "z_translation");
         context.uniform_view = context.getUniformLocation(program, "View");
+
+        // Use the same working view matrix for all contexts temporarily
+        const at = vec3(0.0, 0.0, 0.0);
+        const up = vec3(0.0, 0.5, 0.0);
+        const eye = vec3(-0.15, -0.15, 0.35);
+        const viewMatrix = lookAt(eye, at, up);
+        context.uniformMatrix4fv(context.uniform_view, false, flatten(viewMatrix));
     });
-
-
-    let at = vec3(0.0, 0.0, 0.0);
-    
-
-    let viewMatrix = lookAt(vec3(0.0, 2.0, 0.0), at, vec3(0.0, 0.0, -1.0));
-    xzContext.uniformMatrix4fv(xzContext.uniform_view, false, flatten(viewMatrix));
-    
-
-    viewMatrix = lookAt(vec3(2.0, 0.0, 0.0), at, vec3(0.0, 1.0, 0.0));
-    yzContext.uniformMatrix4fv(yzContext.uniform_view, false, flatten(viewMatrix));
-    
-
-    viewMatrix = lookAt(vec3(0.0, 0.0, 2.0), at, vec3(0.0, 1.0, 0.0));
-    xyContext.uniformMatrix4fv(xyContext.uniform_view, false, flatten(viewMatrix));
-    
-
-    viewMatrix = lookAt(vec3(-0.15, -0.15, 0.35), at, vec3(0.0, 0.5, 0.0));
-    xyzContext.uniformMatrix4fv(xyzContext.uniform_view, false, flatten(viewMatrix));
 }
 
 function allocateMemory() {
@@ -119,18 +106,18 @@ function draw() {
     [xzContext, yzContext, xyContext, xyzContext].forEach(context => {
         context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
 
-
+        // Draw airplane
         context.uniform4f(context.uniform_props, xang * Math.PI / 180, yang * Math.PI / 180, zang * Math.PI / 180, 1.75);
         context.uniform1f(context.uniform_z_translation, 0.0);
         context.uniform4f(context.uniform_color, 0.81, 0.81, 0.81, 1.0);
         context.drawArrays(context.TRIANGLES, 0, Fpl.length * 3);
 
-
+        // Draw propeller
         context.uniform4f(context.uniform_color, 0.5, 0.5, 0.5, 1.0);
         context.uniform4f(context.uniform_props, xang * Math.PI / 180, yang * Math.PI / 180, rot * Math.PI / 180, 1.75);
         context.drawArrays(context.TRIANGLES, Fpl.length * 3, Fpp.length * 3);
 
-
+        // Draw axes
         const axisStart = (Fpl.length + Fpp.length) * 3;
         context.uniform4f(context.uniform_props, 0, 0, 0, 1.0);
         context.uniform4f(context.uniform_color, 1.0, 0.0, 0.0, 1.0);
@@ -185,7 +172,7 @@ document.addEventListener('mousedown', function (event) {
     }
 });
 
-
+// Initialize everything and start animation
 createVertexData();
 configure();
 allocateMemory();
