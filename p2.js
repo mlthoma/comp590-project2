@@ -230,4 +230,3 @@ createVertexData();
 configure();
 allocateMemory();
 setInterval(draw, 100);
-
